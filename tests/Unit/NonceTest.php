@@ -1,6 +1,7 @@
 <?php
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
+use tomleesm\LINEPay\Nonce;
 
 class NonceTest extends TestCase
 {
