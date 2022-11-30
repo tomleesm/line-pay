@@ -25,7 +25,7 @@ class NonceTest extends TestCase
       $this->assertEquals('1', Uuid::fromString($nonceUUID3)->getFields()->getVersion());
       $this->assertEquals('4', Uuid::fromString($nonceUUID4)->getFields()->getVersion());
 
-      $date = \DateTime::setTimestamp($nonceTimestamp);
+      $date = (new \DateTime)->setTimestamp($nonceTimestamp);
       $this->assertEquals($nonceTimestamp, $date->getTimestamp());
 	}
 }
