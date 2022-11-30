@@ -6,5 +6,8 @@
         "psr-4": {
             "tomleesm\\LINEPay\\": "src/"
         }
+    },
+    "require": {
+        "ramsey/uuid": "^4.2"
     }
 }
