@@ -20,7 +20,9 @@ class NonceTest extends TestCase
       # 也可以回傳 timestamp 字串
       $nonceTimestamp = Nonce::get('timestamp');
 
+      $this->assertTrue(is_string($nonceUUID1));
       $this->assertTrue(Uuid::isValid($nonceUUID1));
+      $this->assertTrue(is_string($nonceUUID2));
       $this->assertTrue(Uuid::isValid($nonceUUID2));
       $this->assertEquals('1', Uuid::fromString($nonceUUID3)->getFields()->getVersion());
       $this->assertEquals('4', Uuid::fromString($nonceUUID4)->getFields()->getVersion());
