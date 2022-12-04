@@ -28,4 +28,15 @@ class OrderTest extends TestCase
         $this->assertEquals($orderId, $order->getOrderId());
         $this->assertInstanceOf(TWD::class, $order->getCurrency());
     }
+
+    public function testEmptyArgument()
+    {
+        $order = new Order();
+
+        $this->assertEquals(0.0, $order->getAmount());
+        # 預設產生訂單標號類似 order20221204210514b2501158d528739e4ecd
+        # 共 39 個字元
+        $this->assertEquals(39, strlen($order->getOrderId()));
+        $this->assertInstanceOf(TWD::class, $order->getCurrency());
+    }
 }

@@ -59,4 +59,11 @@ class Order
     {
         return $this->currency;
     }
+
+    public function generateOrderId()
+    {
+        $date = new \DateTime();
+        $str = bin2hex(openssl_random_pseudo_bytes(10));
+        return 'order' . $date->format('YmdHis') . $str;
+    }
 }
