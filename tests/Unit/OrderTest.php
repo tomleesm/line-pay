@@ -24,7 +24,7 @@ class OrderTest extends TestCase
         # 訂單是有效的
         $this->assertTrue($order->isValid());
         # 自動計算訂單總金額
-        $this->assertEquals(100, $order->getAmount());
+        $this->assertEquals(100.0, $order->getAmount());
         $this->assertEquals($orderId, $order->getOrderId());
         $this->assertInstanceOf(TWD::class, $order->getCurrency());
     }
