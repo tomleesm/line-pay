@@ -1,6 +1,7 @@
 <?php
 use PHPUnit\Framework\TestCase;
 use tomleesm\LINEPay\Order;
+use tomleesm\LINEPay\Product;
 
 class OrderTest extends TestCase
 {
@@ -8,13 +9,13 @@ class OrderTest extends TestCase
     {
         $orderId = 'MKSI_S_20180904_1000001';
         $currency = 'TWD';
-        $product = [
+        $product = new Product([
             'id' => 'PEN-B-001',
             'name' => 'Pen Brown',
             'imageUrl' => 'https://pay-store.line.com/images/pen_brown.jpg',
             'quantity' => 2,
             'price' => 50
-        ];
+        ]);
 
         $order = new Order($orderId, $currency);
         $order->addProduct($product);
