@@ -10,7 +10,6 @@ class Order
     private $orderId = '';
     private $currency = null;
     private $productList = null;
-    private $amount = null;
 
     public function __construct($orderId = null, Currency $currency = null)
     {
@@ -22,11 +21,6 @@ class Order
     public function addProduct(Product $product)
     {
         $this->productList->attach($product);
-
-        bcscale(3);
-        foreach($this->productList as $product) {
-            $this->amount = bcadd($this->amount, bcmul($product->quantity, $product->price));
-        }
     }
 
     /**
@@ -47,7 +41,13 @@ class Order
 
     public function getAmount()
     {
-        return (double) $this->amount;
+        bcscale(3);
+        $amount = '0';
+        foreach($this->productList as $product) {
+            $amount = bcadd($amount, bcmul($product->quantity, $product->price));
+        }
+
+        return (double) $amount;
     }
 
     public function getOrderId()
