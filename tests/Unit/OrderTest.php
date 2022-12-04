@@ -2,13 +2,14 @@
 use PHPUnit\Framework\TestCase;
 use tomleesm\LINEPay\Order;
 use tomleesm\LINEPay\Product;
+use tomleesm\LINEPay\Currencies\TWD;
 
 class OrderTest extends TestCase
 {
     public function testNormalOrder()
     {
         $orderId = 'MKSI_S_20180904_1000001';
-        $currency = 'TWD';
+        $currency = new TWD();
         $product = new Product([
             'id' => 'PEN-B-001',
             'name' => 'Pen Brown',
@@ -25,6 +26,6 @@ class OrderTest extends TestCase
         # 自動計算訂單總金額
         $this->assertEquals(100, $order->getAmount());
         $this->assertEquals($orderId, $order->getOrderId());
-        $this->assertEquals($currency, $order->getCurrency());
+        $this->assertInstanceOf(TWD::class, $order->getCurrency());
     }
 }
