@@ -21,7 +21,7 @@ class OrderTest extends TestCase
         $order = new Order($orderId, $currency);
         $order->addProduct($product);
 
-        # 訂單是有效的：有訂單編號且在 LINE Pay 支援範圍內、貨幣 LINE Pay 有支援、訂單內有商品、總金額大於等於 0、商品售價和數量都大於等於 0
+        # 訂單是有效的
         $this->assertTrue($order->isValid());
         # 自動計算訂單總金額
         $this->assertEquals(100, $order->getAmount());
