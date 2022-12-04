@@ -41,7 +41,7 @@ class Order
 
     public function getAmount()
     {
-        bcscale(3);
+        bcscale(10);
         $amount = '0';
         foreach($this->productList as $product) {
             $amount = bcadd($amount, bcmul($product->quantity, $product->price));
