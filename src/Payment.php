@@ -12,14 +12,28 @@ class Payment
     private $confirmUrl = '';
     private $cancelUrl = '';
 
-    public function __construct($option)
+    public function __construct($option = null)
     {
-          $this->channelId = $option['channelId'];
+          # load .env
+          $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+          $dotenv->safeLoad();
+
+          $this->setChannelId($option);
           $this->channelSecret = $option['channelSecret'];
           $this->merchantDeviceProfileId = $option['merchantDeviceProfileId'];
           $this->setNonce($option['nonceType']);
           $this->confirmUrl = $option['confirmUrl'];
           $this->cancelUrl = $option['cancelUrl'];
+    }
+
+    private function setChannelId($option)
+    {
+        if( ! empty($option['channelId']))
+            $this->channelId = $option['channelId'];
+        else if( ! empty($_ENV['LINEPAY_CHANNEL_ID']))
+            $this->channelId = $_ENV['LINEPAY_CHANNEL_ID'];
+        else
+            throw new \Exception('set channel id via constructor or LINEPAY_CHANNEL_ID in .env');
     }
 
     private function setNonce($type)
