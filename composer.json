@@ -9,9 +9,9 @@
     },
     "require": {
         "ramsey/uuid": "^4.2",
-        "oscarotero/env": "^2.1",
         "guzzlehttp/guzzle": "^7.5",
         "php-vcr/php-vcr": "^1.5",
-        "symfony/filesystem": "^5.4"
+        "symfony/filesystem": "^5.4",
+        "vlucas/phpdotenv": "^5.5"
     }
 }
