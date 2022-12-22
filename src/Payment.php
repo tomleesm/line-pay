@@ -9,6 +9,7 @@ class Payment
     private $channelSecret = '';
     private $merchantDeviceProfileId = '';
     private $nonce = '';
+    private $nonceType = '';
     private $confirmUrl = '';
     private $cancelUrl = '';
 
@@ -18,26 +19,29 @@ class Payment
           $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
           $dotenv->safeLoad();
 
-          $this->setChannelId($option);
-          $this->channelSecret = $option['channelSecret'];
-          $this->merchantDeviceProfileId = $option['merchantDeviceProfileId'];
-          $this->setNonce($option['nonceType']);
-          $this->confirmUrl = $option['confirmUrl'];
-          $this->cancelUrl = $option['cancelUrl'];
+          $this->setOption($option, 'channelId', 'LINEPAY_CHANNEL_ID');
+          $this->setOption($option, 'channelScrect', 'LINEPAY_CHANNEL_SECRET');
+          $this->setOption($option, 'merchantDeviceProfileId', 'LINEPAY_MERCHANT_DEVICE_PROFILE_ID');
+          $this->setNonce($option);
+          $this->setOption($option, 'confirmUrl', 'LINEPAY_CONFIRM_URL');
+          $this->setOption($option, 'cancelUrl', 'LINEPAY_CANCEL_URL');
     }
 
-    private function setChannelId($option)
+    private function setOption($option, $optionIndex, $envIndex)
     {
-        if( ! empty($option['channelId']))
-            $this->channelId = $option['channelId'];
-        else if( ! empty($_ENV['LINEPAY_CHANNEL_ID']))
-            $this->channelId = $_ENV['LINEPAY_CHANNEL_ID'];
+        if( ! empty($option[$optionIndex]))
+            $this->$optionIndex = $option[$optionIndex];
+        else if( ! empty($_ENV[$envIndex]))
+            $this->$optionIndex = $_ENV[$envIndex];
         else
-            throw new \Exception('set channel id via constructor or LINEPAY_CHANNEL_ID in .env');
+            throw new \Exception("set {$optionIndex} via constructor or {$envIndex} in .env");
     }
 
-    private function setNonce($type)
+    private function setNonce($option)
     {
+        $this->setOption($option, 'nonceType', 'LINEPAY_NONCE_TYPE');
+
+        $type = $this->nonceType;
         if ($type == 'uuid')
             $this->nonce = Nonce::get('uuid');
         else if ($type == 'uuid_v1')
