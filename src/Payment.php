@@ -2,6 +2,7 @@
 namespace tomleesm\LINEPay;
 
 use tomleesm\LINEPay\Nonce;
+use tomleesm\LINEPay\Order;
 
 class Payment
 {
@@ -12,9 +13,12 @@ class Payment
     private $nonceType = '';
     private $confirmUrl = '';
     private $cancelUrl = '';
+    private $order = null;
 
-    public function __construct($option = null)
+    public function __construct(Order $order = null, $option = null)
     {
+          $this->order = $order;
+
           # load .env
           $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
           $dotenv->safeLoad();
@@ -64,13 +68,30 @@ class Payment
         ];
     }
 
+    /**
+     *
+                [
+                    'id' => '1',
+                    'amount'=> 100,
+                    'products' => [
+                        [
+                            'id' => 'PEN-B-001',
+                            'name' => 'Pen Brown',
+                            'imageUrl' => 'https://pay-store.line.com/images/pen_brown.jpg',
+                            'quantity' => 2,
+                            'price' => 50
+                        ]
+                    ]
+                ]
+     */
     public function getRequestBody()
     {
         return json_encode([
-            'amount' => 0,
-            'currency' => 'TWD',
-            'orderId' => '',
-            'packages' => [],
+            'amount' => is_null($this->order) ? 0 : $this->order->getAmount(),
+            'currency' => is_null($this->order) ? 'TWD' : (string) $this->order->getCurrency(),
+            'orderId' => is_null($this->order) ? '' : $this->order->getOrderId(),
+            'packages' => [
+            ],
             'redirectUrls' => [
                 'confirmUrl' => $this->confirmUrl,
                 'cancelUrl' => $this->cancelUrl

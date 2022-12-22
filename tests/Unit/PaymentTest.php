@@ -42,7 +42,7 @@ class PaymentTest extends TestCase
             ]
         ]);
 
-        $p = new Payment($option);
+        $p = new Payment(null, $option);
 
         $this->assertEquals($header['ContentType'], $p->getHeader()['ContentType']);
         $this->assertEquals($header['X-LINE-ChannelId'], $p->getHeader()['X-LINE-ChannelId']);
