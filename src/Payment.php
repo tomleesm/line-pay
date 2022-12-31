@@ -68,30 +68,35 @@ class Payment
         ];
     }
 
-    /**
-     *
-                [
-                    'id' => '1',
-                    'amount'=> 100,
-                    'products' => [
-                        [
-                            'id' => 'PEN-B-001',
-                            'name' => 'Pen Brown',
-                            'imageUrl' => 'https://pay-store.line.com/images/pen_brown.jpg',
-                            'quantity' => 2,
-                            'price' => 50
-                        ]
-                    ]
-                ]
-     */
     public function getRequestBody()
     {
+        $products = [];
+        $packages = [];
+        if ( ! is_null($this->order) && $this->order->getProductList()->count() !== 0 ) {
+            foreach($this->order->getProductList() as $p) {
+                $products[] = [
+                    'id' => $p->id,
+                    'name' => $p->name,
+                    'imageUrl' => $p->imageUrl,
+                    'quantity' => (double) $p->quantity,
+                    'price' => (double) $p->price
+                ];
+            }
+            $packages = [
+                [
+                    'id' => '1',
+                    'amount'=> $this->order->getAmount(),
+                    'products' => $products
+                ]
+            ];
+        }
+
+
         return json_encode([
             'amount' => is_null($this->order) ? 0 : $this->order->getAmount(),
             'currency' => is_null($this->order) ? 'TWD' : (string) $this->order->getCurrency(),
             'orderId' => is_null($this->order) ? '' : $this->order->getOrderId(),
-            'packages' => [
-            ],
+            'packages' => $packages,
             'redirectUrls' => [
                 'confirmUrl' => $this->confirmUrl,
                 'cancelUrl' => $this->cancelUrl
