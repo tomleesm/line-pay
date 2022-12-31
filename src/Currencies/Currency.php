@@ -5,6 +5,6 @@ abstract class Currency
 {
     public function __toString()
     {
-        return get_class($this);
+        return (new \ReflectionClass($this))->getShortName();
     }
 }

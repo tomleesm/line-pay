@@ -66,4 +66,9 @@ class Order
         $str = bin2hex(openssl_random_pseudo_bytes(10));
         return 'order' . $date->format('YmdHis') . $str;
     }
+
+    public function getProductList()
+    {
+	    return clone $this->productList;
+    }
 }
