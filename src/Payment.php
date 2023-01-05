@@ -3,6 +3,7 @@ namespace tomleesm\LINEPay;
 
 use tomleesm\LINEPay\Nonce;
 use tomleesm\LINEPay\Order;
+use GuzzleHttp\Client;
 
 class Payment
 {
@@ -61,7 +62,7 @@ class Payment
     public function getHeader()
     {
         return [
-            'ContentType' => 'application/json',
+            'Content-Type' => 'application/json',
             'X-LINE-ChannelId' => $this->channelId,
             'X-LINE-MerchantDeviceProfileId' => $this->merchantDeviceProfileId,
             'X-LINE-Authorization-Nonce' => $this->nonce

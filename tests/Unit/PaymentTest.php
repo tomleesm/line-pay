@@ -27,7 +27,7 @@ class PaymentTest extends TestCase
         ];
 
         $header = [
-            'ContentType' => 'application/json',
+            'Content-Type' => 'application/json',
             'X-LINE-ChannelId' => $channelId,
             'X-LINE-MerchantDeviceProfileId' => $merchantDeviceProfileId,
         ];
@@ -44,7 +44,7 @@ class PaymentTest extends TestCase
 
         $p = new Payment(null, $option);
 
-        $this->assertEquals($header['ContentType'], $p->getHeader()['ContentType']);
+        $this->assertEquals($header['Content-Type'], $p->getHeader()['Content-Type']);
         $this->assertEquals($header['X-LINE-ChannelId'], $p->getHeader()['X-LINE-ChannelId']);
         $this->assertEquals($header['X-LINE-MerchantDeviceProfileId'], $p->getHeader()['X-LINE-MerchantDeviceProfileId']);
 
@@ -82,7 +82,7 @@ class PaymentTest extends TestCase
         $filesystem->appendToFile($envPath, 'LINEPAY_CANCEL_URL=' . $option['LINEPAY_CANCEL_URL'] . PHP_EOL);
 
         $header = [
-            'ContentType' => 'application/json',
+            'Content-Type' => 'application/json',
             'X-LINE-ChannelId' => $channelId,
             'X-LINE-MerchantDeviceProfileId' => $merchantDeviceProfileId,
         ];
@@ -99,7 +99,7 @@ class PaymentTest extends TestCase
 
         $p = new Payment();
 
-        $this->assertEquals($header['ContentType'], $p->getHeader()['ContentType']);
+        $this->assertEquals($header['Content-Type'], $p->getHeader()['Content-Type']);
         $this->assertEquals($header['X-LINE-ChannelId'], $p->getHeader()['X-LINE-ChannelId']);
         $this->assertEquals($header['X-LINE-MerchantDeviceProfileId'], $p->getHeader()['X-LINE-MerchantDeviceProfileId']);
 
