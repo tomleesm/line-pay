@@ -62,27 +62,10 @@ class PaymentTest extends TestCase
     {
         $merchantDeviceProfileId = '9876543210';
         $channelId = '1234567890';
-        $option = [
-          'LINEPAY_CHANNEL_ID' => $channelId,
-          'LINEPAY_CHANNEL_SECRET' => 'abcdefg',
-          'LINEPAY_MERCHANT_DEVICE_PROFILE_ID' => $merchantDeviceProfileId,
-          'LINEPAY_NONCE_TYPE' => 'uuid',
-          'LINEPAY_CONFIRM_URL' => 'https://pay-store.line.com/order/payment/authorize',
-          'LINEPAY_CANCEL_URL' => 'https://pay-store.line.com/order/payment/cancel'
-        ];
 
         # $option 新增到 .env 檔案
         $filesystem = new Filesystem();
-        $envPath = '.env';
-        if($filesystem->exists($envPath)) {
-            $filesystem->remove([$envPath]);
-        }
-        $filesystem->appendToFile($envPath, 'LINEPAY_CHANNEL_ID=' . $option['LINEPAY_CHANNEL_ID'] . PHP_EOL);
-        $filesystem->appendToFile($envPath, 'LINEPAY_CHANNEL_SECRET=' . $option['LINEPAY_CHANNEL_SECRET'] . PHP_EOL);
-        $filesystem->appendToFile($envPath, 'LINEPAY_MERCHANT_DEVICE_PROFILE_ID=' . $option['LINEPAY_MERCHANT_DEVICE_PROFILE_ID'] . PHP_EOL);
-        $filesystem->appendToFile($envPath, 'LINEPAY_NONCE_TYPE=' . $option['LINEPAY_NONCE_TYPE'] . PHP_EOL);
-        $filesystem->appendToFile($envPath, 'LINEPAY_CONFIRM_URL=' . $option['LINEPAY_CONFIRM_URL'] . PHP_EOL);
-        $filesystem->appendToFile($envPath, 'LINEPAY_CANCEL_URL=' . $option['LINEPAY_CANCEL_URL'] . PHP_EOL);
+        $filesystem->copy('.env.test1', '.env', true);
 
         $header = [
             'Content-Type' => 'application/json',
@@ -114,6 +97,8 @@ class PaymentTest extends TestCase
         $this->assertTrue(Uuid::isValid($nonceUUID1));
 
         $this->assertEquals($requestBody, $p->getRequestBody());
+
+        $filesystem->remove(['.env']);
     }
 
     /**
@@ -172,5 +157,26 @@ class PaymentTest extends TestCase
         $p = new Payment($order, $option);
 
         $this->assertEquals($requestBody, $p->getRequestBody());
+    }
+
+    public function testRequestAPI()
+    {
+        $filesystem = new Filesystem();
+        $filesystem->copy('.env.test2', '.env', true);
+
+        $currency = new TWD();
+        $product = new Product([
+            'id' => 'PEN-B-001',
+            'name' => 'Pen Brown',
+            'imageUrl' => 'https://pay-store.line.com/images/pen_brown.jpg',
+            'quantity' => 2,
+            'price' => 50
+        ]);
+        $order = new Order(null, $currency);
+        $order->addProduct($product);
+
+        $p = new Payment($order);
+        var_dump($p->getHeader());
+        var_dump($p->request());
     }
 }

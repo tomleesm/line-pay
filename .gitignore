@@ -2,4 +2,4 @@
 .phpunit.result.cache
 composer.lock
 .env
-.env.test
+.env.test2
