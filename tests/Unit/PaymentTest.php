@@ -53,6 +53,9 @@ class PaymentTest extends TestCase
         $this->assertTrue(Uuid::isValid($nonceUUID1));
 
         $this->assertEquals($requestBody, $p->getRequestBody());
+
+        $this->assertEquals(44, strlen($p->getHeader()['X-LINE-Authorization']));
+        $this->assertEquals('=', substr($p->getHeader()['X-LINE-Authorization'], -1));
     }
 
     public function testNewObjectWithoutParameter()
@@ -102,6 +105,9 @@ class PaymentTest extends TestCase
         $this->assertEquals($header['Content-Type'], $p->getHeader()['Content-Type']);
         $this->assertEquals($header['X-LINE-ChannelId'], $p->getHeader()['X-LINE-ChannelId']);
         $this->assertEquals($header['X-LINE-MerchantDeviceProfileId'], $p->getHeader()['X-LINE-MerchantDeviceProfileId']);
+
+        $this->assertEquals(44, strlen($p->getHeader()['X-LINE-Authorization']));
+        $this->assertEquals('=', substr($p->getHeader()['X-LINE-Authorization'], -1));
 
         $nonceUUID1 = $p->getHeader()['X-LINE-Authorization-Nonce'];
         $this->assertTrue(is_string($nonceUUID1));

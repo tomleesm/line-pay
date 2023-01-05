@@ -4,6 +4,7 @@ namespace tomleesm\LINEPay;
 use tomleesm\LINEPay\Nonce;
 use tomleesm\LINEPay\Order;
 use GuzzleHttp\Client;
+use tomleesm\LINEPay\Signature;
 
 class Payment
 {
@@ -59,13 +60,19 @@ class Payment
             $this->nonce = Nonce::get('uuid');
     }
 
-    public function getHeader()
+    public function getHeader($requestUri = '')
     {
         return [
             'Content-Type' => 'application/json',
             'X-LINE-ChannelId' => $this->channelId,
             'X-LINE-MerchantDeviceProfileId' => $this->merchantDeviceProfileId,
-            'X-LINE-Authorization-Nonce' => $this->nonce
+            'X-LINE-Authorization-Nonce' => $this->nonce,
+            'X-LINE-Authorization' => Signature::generate(
+                                            $this->channelSecret,
+                                            $requestUri,
+                                            $this->getRequestBody(),
+                                            $this->nonce
+                                        )
         ];
     }
 
