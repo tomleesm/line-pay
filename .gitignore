@@ -2,4 +2,5 @@
 .phpunit.result.cache
 composer.lock
 .env
+# 申請的測試 channel id 和 channel secrect
 .env.test2

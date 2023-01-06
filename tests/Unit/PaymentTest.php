@@ -10,6 +10,14 @@ use tomleesm\LINEPay\Currencies\TWD;
 
 class PaymentTest extends TestCase
 {
+    public function tearDown(): void
+    {
+        $filesystem = new Filesystem();
+        if($filesystem->exists('.env')) {
+            $filesystem->remove(['.env']);
+        }
+    }
+
     /**
      * new 一個 Payment 物件，傳入必要的參數，使其可以產生 API Authentication 需要的 HTTP header
      **/
@@ -60,12 +68,12 @@ class PaymentTest extends TestCase
 
     public function testNewObjectWithoutParameter()
     {
-        $merchantDeviceProfileId = '9876543210';
-        $channelId = '1234567890';
+        $merchantDeviceProfileId = '9876543212';
+        $channelId = '1234567892';
 
         # $option 新增到 .env 檔案
         $filesystem = new Filesystem();
-        $filesystem->copy('.env.test1', '.env', true);
+        $filesystem->copy('.env.test1', '.env');
 
         $header = [
             'Content-Type' => 'application/json',
@@ -97,8 +105,6 @@ class PaymentTest extends TestCase
         $this->assertTrue(Uuid::isValid($nonceUUID1));
 
         $this->assertEquals($requestBody, $p->getRequestBody());
-
-        $filesystem->remove(['.env']);
     }
 
     /**
@@ -106,8 +112,8 @@ class PaymentTest extends TestCase
      **/
     public function testRequestBodyWithOrder()
     {
-        $merchantDeviceProfileId = '9876543210';
-        $channelId = '1234567890';
+        $merchantDeviceProfileId = '9876543211';
+        $channelId = '1234567891';
         $option = [
           'channelId' => $channelId,
           'channelSecret' => 'abcdefg',
@@ -162,7 +168,7 @@ class PaymentTest extends TestCase
     public function testRequestAPI()
     {
         $filesystem = new Filesystem();
-        $filesystem->copy('.env.test2', '.env', true);
+        $filesystem->copy('.env.test2', '.env');
 
         $currency = new TWD();
         $product = new Product([
@@ -176,7 +182,6 @@ class PaymentTest extends TestCase
         $order->addProduct($product);
 
         $p = new Payment($order);
-        var_dump($p->getHeader());
         var_dump($p->request());
     }
 }

@@ -22,15 +22,32 @@ class Payment
           $this->order = $order;
 
           # load .env
-          $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+          # 這兩個並不是必要的，所以可能 .env 沒有這兩個
+          # 一旦讀取 .env 設定，會被快取，所以必須設定成初始值沒有這兩個
+          if( ! empty($_ENV['LINEPAY_MERCHANT_DEVICE_PROFILE_ID']))
+              unset($_ENV['LINEPAY_MERCHANT_DEVICE_PROFILE_ID']);
+          if( ! empty($_ENV['LINEPAY_CANCEL_URL']))
+              unset($_ENV['LINEPAY_CANCEL_URL']);
+
+          $dotenv = \Dotenv\Dotenv::createMutable(__DIR__ . '/..');
           $dotenv->safeLoad();
 
-          $this->setOption($option, 'channelId', 'LINEPAY_CHANNEL_ID');
-          $this->setOption($option, 'channelSecret', 'LINEPAY_CHANNEL_SECRET');
-          $this->setOption($option, 'merchantDeviceProfileId', 'LINEPAY_MERCHANT_DEVICE_PROFILE_ID');
+          $this->setRequireOption($option, 'channelId', 'LINEPAY_CHANNEL_ID');
+          $this->setRequireOption($option, 'channelSecret', 'LINEPAY_CHANNEL_SECRET');
           $this->setNonce($option);
-          $this->setOption($option, 'confirmUrl', 'LINEPAY_CONFIRM_URL');
+          $this->setRequireOption($option, 'confirmUrl', 'LINEPAY_CONFIRM_URL');
           $this->setOption($option, 'cancelUrl', 'LINEPAY_CANCEL_URL');
+          $this->setOption($option, 'merchantDeviceProfileId', 'LINEPAY_MERCHANT_DEVICE_PROFILE_ID');
+    }
+
+    private function setRequireOption($option, $optionIndex, $envIndex)
+    {
+        if( ! empty($option[$optionIndex]))
+            $this->$optionIndex = $option[$optionIndex];
+        else if( ! empty($_ENV[$envIndex]))
+            $this->$optionIndex = $_ENV[$envIndex];
+        else
+            throw new \Exception("set {$optionIndex} via constructor or {$envIndex} in .env");
     }
 
     private function setOption($option, $optionIndex, $envIndex)
@@ -40,7 +57,7 @@ class Payment
         else if( ! empty($_ENV[$envIndex]))
             $this->$optionIndex = $_ENV[$envIndex];
         else
-            throw new \Exception("set {$optionIndex} via constructor or {$envIndex} in .env");
+            $this->$optionIndex = '';
     }
 
     private function setNonce($option)
