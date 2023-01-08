@@ -20,33 +20,15 @@ class Client
     {
           $this->order = $order;
 
-          # load .env
-          # 這兩個並不是必要的，所以可能 .env 沒有這兩個
-          # 一旦讀取 .env 設定，會被快取，所以必須設定成初始值沒有這兩個
-          if( ! empty($_ENV['LINEPAY_MERCHANT_DEVICE_PROFILE_ID']))
-              unset($_ENV['LINEPAY_MERCHANT_DEVICE_PROFILE_ID']);
-          if( ! empty($_ENV['LINEPAY_CANCEL_URL']))
-              unset($_ENV['LINEPAY_CANCEL_URL']);
-
           $dotenv = \Dotenv\Dotenv::createMutable(__DIR__ . '/..');
           $dotenv->safeLoad();
 
-          $this->setRequireOption($option, 'channelId', 'LINEPAY_CHANNEL_ID');
-          $this->setRequireOption($option, 'channelSecret', 'LINEPAY_CHANNEL_SECRET');
+          $this->setOption($option, 'channelId', 'LINEPAY_CHANNEL_ID');
+          $this->setOption($option, 'channelSecret', 'LINEPAY_CHANNEL_SECRET');
           $this->setNonce($option);
-          $this->setRequireOption($option, 'confirmUrl', 'LINEPAY_CONFIRM_URL');
+          $this->setOption($option, 'confirmUrl', 'LINEPAY_CONFIRM_URL');
           $this->setOption($option, 'cancelUrl', 'LINEPAY_CANCEL_URL');
           $this->setOption($option, 'merchantDeviceProfileId', 'LINEPAY_MERCHANT_DEVICE_PROFILE_ID');
-    }
-
-    private function setRequireOption($option, $optionIndex, $envIndex)
-    {
-        if( ! empty($option[$optionIndex]))
-            $this->$optionIndex = $option[$optionIndex];
-        else if( ! empty($_ENV[$envIndex]))
-            $this->$optionIndex = $_ENV[$envIndex];
-        else
-            throw new \Exception("set {$optionIndex} via constructor or {$envIndex} in .env");
     }
 
     private function setOption($option, $optionIndex, $envIndex)
@@ -55,8 +37,6 @@ class Client
             $this->$optionIndex = $option[$optionIndex];
         else if( ! empty($_ENV[$envIndex]))
             $this->$optionIndex = $_ENV[$envIndex];
-        else
-            $this->$optionIndex = '';
     }
 
     private function setNonce($option)
