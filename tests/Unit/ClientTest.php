@@ -143,7 +143,6 @@ class ClientTest extends TestCase
         $this->assertEquals($requestBody, $client->getRequestBody());
     }
 
-    /**
     public function testRequestAPI()
     {
         $currency = new TWD();
@@ -158,7 +157,9 @@ class ClientTest extends TestCase
         $order->addProduct($product);
 
         $client = new Client($order);
-        var_dump($client->request());
+        $result = $client->request();
+
+        $this->assertTrue($result->isSuccessful());
+        $this->assertNotEmpty($result->getPaymentUrl());
     }
-    **/
 }

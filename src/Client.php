@@ -4,6 +4,7 @@ namespace tomleesm\LINEPay;
 use tomleesm\LINEPay\Nonce;
 use tomleesm\LINEPay\Order;
 use tomleesm\LINEPay\Signature;
+use tomleesm\LINEPay\Result;
 
 class Client
 {
@@ -126,6 +127,7 @@ class Client
                 'headers' => $this->getHeader($requestUri)
             ]
         );
-        return (string) $response->getBody();
+        $json = (string) $response->getBody();
+        return new Result($json);
     }
 }
