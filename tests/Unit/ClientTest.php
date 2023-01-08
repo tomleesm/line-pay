@@ -1,6 +1,6 @@
 <?php
 use PHPUnit\Framework\TestCase;
-use tomleesm\LINEPay\Payment;
+use tomleesm\LINEPay\Client;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Filesystem\Filesystem;
 use function Env\env;
@@ -8,7 +8,7 @@ use tomleesm\LINEPay\Order;
 use tomleesm\LINEPay\Product;
 use tomleesm\LINEPay\Currencies\TWD;
 
-class PaymentTest extends TestCase
+class ClientTest extends TestCase
 {
     public function tearDown(): void
     {
@@ -19,7 +19,7 @@ class PaymentTest extends TestCase
     }
 
     /**
-     * new 一個 Payment 物件，傳入必要的參數，使其可以產生 API Authentication 需要的 HTTP header
+     * new 一個 Client 物件，傳入必要的參數，使其可以產生 API Authentication 需要的 HTTP header
      **/
     public function testNewObjectWithParameter()
     {
@@ -50,20 +50,20 @@ class PaymentTest extends TestCase
             ]
         ]);
 
-        $p = new Payment(null, $option);
+        $client = new Client(null, $option);
 
-        $this->assertEquals($header['Content-Type'], $p->getHeader()['Content-Type']);
-        $this->assertEquals($header['X-LINE-ChannelId'], $p->getHeader()['X-LINE-ChannelId']);
-        $this->assertEquals($header['X-LINE-MerchantDeviceProfileId'], $p->getHeader()['X-LINE-MerchantDeviceProfileId']);
+        $this->assertEquals($header['Content-Type'], $client->getHeader()['Content-Type']);
+        $this->assertEquals($header['X-LINE-ChannelId'], $client->getHeader()['X-LINE-ChannelId']);
+        $this->assertEquals($header['X-LINE-MerchantDeviceProfileId'], $client->getHeader()['X-LINE-MerchantDeviceProfileId']);
 
-        $nonceUUID1 = $p->getHeader()['X-LINE-Authorization-Nonce'];
+        $nonceUUID1 = $client->getHeader()['X-LINE-Authorization-Nonce'];
         $this->assertTrue(is_string($nonceUUID1));
         $this->assertTrue(Uuid::isValid($nonceUUID1));
 
-        $this->assertEquals($requestBody, $p->getRequestBody());
+        $this->assertEquals($requestBody, $client->getRequestBody());
 
-        $this->assertEquals(44, strlen($p->getHeader()['X-LINE-Authorization']));
-        $this->assertEquals('=', substr($p->getHeader()['X-LINE-Authorization'], -1));
+        $this->assertEquals(44, strlen($client->getHeader()['X-LINE-Authorization']));
+        $this->assertEquals('=', substr($client->getHeader()['X-LINE-Authorization'], -1));
     }
 
     public function testNewObjectWithoutParameter()
@@ -91,20 +91,20 @@ class PaymentTest extends TestCase
             ]
         ]);
 
-        $p = new Payment();
+        $client = new Client();
 
-        $this->assertEquals($header['Content-Type'], $p->getHeader()['Content-Type']);
-        $this->assertEquals($header['X-LINE-ChannelId'], $p->getHeader()['X-LINE-ChannelId']);
-        $this->assertEquals($header['X-LINE-MerchantDeviceProfileId'], $p->getHeader()['X-LINE-MerchantDeviceProfileId']);
+        $this->assertEquals($header['Content-Type'], $client->getHeader()['Content-Type']);
+        $this->assertEquals($header['X-LINE-ChannelId'], $client->getHeader()['X-LINE-ChannelId']);
+        $this->assertEquals($header['X-LINE-MerchantDeviceProfileId'], $client->getHeader()['X-LINE-MerchantDeviceProfileId']);
 
-        $this->assertEquals(44, strlen($p->getHeader()['X-LINE-Authorization']));
-        $this->assertEquals('=', substr($p->getHeader()['X-LINE-Authorization'], -1));
+        $this->assertEquals(44, strlen($client->getHeader()['X-LINE-Authorization']));
+        $this->assertEquals('=', substr($client->getHeader()['X-LINE-Authorization'], -1));
 
-        $nonceUUID1 = $p->getHeader()['X-LINE-Authorization-Nonce'];
+        $nonceUUID1 = $client->getHeader()['X-LINE-Authorization-Nonce'];
         $this->assertTrue(is_string($nonceUUID1));
         $this->assertTrue(Uuid::isValid($nonceUUID1));
 
-        $this->assertEquals($requestBody, $p->getRequestBody());
+        $this->assertEquals($requestBody, $client->getRequestBody());
     }
 
     /**
@@ -160,9 +160,9 @@ class PaymentTest extends TestCase
             ]
         ]);
 
-        $p = new Payment($order, $option);
+        $client = new Client($order, $option);
 
-        $this->assertEquals($requestBody, $p->getRequestBody());
+        $this->assertEquals($requestBody, $client->getRequestBody());
     }
 
     public function testRequestAPI()
@@ -181,7 +181,7 @@ class PaymentTest extends TestCase
         $order = new Order(null, $currency);
         $order->addProduct($product);
 
-        $p = new Payment($order);
-        var_dump($p->request());
+        $client = new Client($order);
+        var_dump($client->request());
     }
 }

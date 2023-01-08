@@ -3,10 +3,9 @@ namespace tomleesm\LINEPay;
 
 use tomleesm\LINEPay\Nonce;
 use tomleesm\LINEPay\Order;
-use GuzzleHttp\Client;
 use tomleesm\LINEPay\Signature;
 
-class Payment
+class Client
 {
     private $channelId = '';
     private $channelSecret = '';
@@ -136,7 +135,7 @@ class Payment
     public function request()
     {
         $requestUri = '/v3/payments/request';
-        $client = new Client([
+        $client = new \GuzzleHttp\Client([
             'base_uri' => 'https://sandbox-api-pay.line.me'
         ]);
         $response = $client->request(
