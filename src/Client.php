@@ -20,7 +20,7 @@ class Client
     {
           $this->order = $order;
 
-          $dotenv = \Dotenv\Dotenv::createMutable(__DIR__ . '/..');
+          $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
           $dotenv->safeLoad();
 
           $this->setOption($option, 'channelId', 'LINEPAY_CHANNEL_ID');
