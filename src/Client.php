@@ -3,8 +3,10 @@ namespace tomleesm\LINEPay;
 
 use tomleesm\LINEPay\Nonce;
 use tomleesm\LINEPay\Order;
+use tomleesm\LINEPay\Signature;
+use tomleesm\LINEPay\Result;
 
-class Payment
+class Client
 {
     private $channelId = '';
     private $channelSecret = '';
@@ -19,16 +21,15 @@ class Payment
     {
           $this->order = $order;
 
-          # load .env
           $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
           $dotenv->safeLoad();
 
           $this->setOption($option, 'channelId', 'LINEPAY_CHANNEL_ID');
-          $this->setOption($option, 'channelScrect', 'LINEPAY_CHANNEL_SECRET');
-          $this->setOption($option, 'merchantDeviceProfileId', 'LINEPAY_MERCHANT_DEVICE_PROFILE_ID');
+          $this->setOption($option, 'channelSecret', 'LINEPAY_CHANNEL_SECRET');
           $this->setNonce($option);
           $this->setOption($option, 'confirmUrl', 'LINEPAY_CONFIRM_URL');
           $this->setOption($option, 'cancelUrl', 'LINEPAY_CANCEL_URL');
+          $this->setOption($option, 'merchantDeviceProfileId', 'LINEPAY_MERCHANT_DEVICE_PROFILE_ID');
     }
 
     private function setOption($option, $optionIndex, $envIndex)
@@ -37,8 +38,6 @@ class Payment
             $this->$optionIndex = $option[$optionIndex];
         else if( ! empty($_ENV[$envIndex]))
             $this->$optionIndex = $_ENV[$envIndex];
-        else
-            throw new \Exception("set {$optionIndex} via constructor or {$envIndex} in .env");
     }
 
     private function setNonce($option)
@@ -58,14 +57,24 @@ class Payment
             $this->nonce = Nonce::get('uuid');
     }
 
-    public function getHeader()
+    public function getHeader($requestUri = '')
     {
-        return [
-            'ContentType' => 'application/json',
+        $header = [
+            'Content-Type' => 'application/json',
             'X-LINE-ChannelId' => $this->channelId,
-            'X-LINE-MerchantDeviceProfileId' => $this->merchantDeviceProfileId,
-            'X-LINE-Authorization-Nonce' => $this->nonce
+            'X-LINE-Authorization-Nonce' => $this->nonce,
+            'X-LINE-Authorization' => Signature::generate(
+                                            $this->channelSecret,
+                                            $requestUri,
+                                            $this->getRequestBody(),
+                                            $this->nonce
+                                        )
         ];
+
+        if( ! empty($this->merchantDeviceProfileId)) {
+            $header = array_merge($header, ['X-LINE-MerchantDeviceProfileId' => $this->merchantDeviceProfileId]);
+        }
+        return $header;
     }
 
     public function getRequestBody()
@@ -102,5 +111,23 @@ class Payment
                 'cancelUrl' => $this->cancelUrl
             ]
         ]);
+    }
+
+    public function request()
+    {
+        $requestUri = '/v3/payments/request';
+        $client = new \GuzzleHttp\Client([
+            'base_uri' => 'https://sandbox-api-pay.line.me'
+        ]);
+        $response = $client->request(
+            'POST',
+            $requestUri,
+            [
+                'body' => $this->getRequestBody(),
+                'headers' => $this->getHeader($requestUri)
+            ]
+        );
+        $json = (string) $response->getBody();
+        return new Result($json);
     }
 }
